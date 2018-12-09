@@ -49,55 +49,39 @@ class App extends Component {
   }
 
 
-  select(column_i, clicked_item) {
+  select(column_i, clicked_item, type) {
     // let n = fake_api()
     // console.log(new_selected_item)
-    const new_path_arr = this.state.path.slice(0, column_i + 1).concat(clicked_item)
-    const new_path_str = new_path_arr.join('/')
-    // console.log(column_i, clicked_item)
-    // console.warn(new_path_arr)
-
-    const opts = {
-      method: 'post',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ 
-        'path': new_path_str,
+    if (type === 'folder') {
+      const new_path_arr = this.state.path.slice(0, column_i + 1).concat(clicked_item)
+      const new_path_str = new_path_arr.join('/')
+  
+      const opts = {
+        method: 'post',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ 
+          'path': new_path_str,
+        })
+      } 
+      fetch(host + '/last_dir_in_path', opts)
+      .then(response => { 
+        if (response.ok) { return response.json() }
+        else { console.error('Error in fetch') }
       })
-    } 
-    fetch(host + '/last_dir_in_path', opts)
-    .then(response => { 
-      if (response.ok) { return response.json() }
-      else { console.error('Error in fetch') }
-    })
-    // .then(json => console.log(json))
-    .then(json => {
-      window.history.pushState(null, null, new_path_str)
-      this.setState({
-        items: this.state.items.slice(0, column_i + 1).concat([json]),
-        path: new_path_arr,
+      .then(json => {
+        window.history.pushState(null, null, new_path_str)
+        this.setState({
+          items: this.state.items.slice(0, column_i + 1).concat([json]),
+          path: new_path_arr,
+        })
       })
-    })
+    }
+    else {
+      console.log('file descriptipn')
+    }
 
-    // console.log('new path:', new_path)
-    // console.log('new path:', new_path.join('/'))
-    // const new_path = window.location.pathname + '/' + new_selected_item
-    // window.history.pushState(null, null, new_path)
-    // window.history.pushState(null, null, window.location.pathname + '/' + new_selected_item)
-    // window.location.pathname += '/' + new_selected_item
-    // this.append_dir(window.location.pathname)
 
-    // this.setState(prevState => {
-    //   let z = prevState.path.slice(0, column_i + 1)
-    //   z[z.length - 1] = new_selected_item
-    //   // console.log(z)
 
-    //   // console.log([...prevState.selected.slice(0, column_i - 1), new_selected_item])
-    //   return { path: z }
-    // })
-    // this.state.path[column_i] = new_selected_item
-    // this
-    // console.log(1)
-    // window.alert(n)
   }
 
   render() {
@@ -105,12 +89,12 @@ class App extends Component {
     console.log(this.state.path)
     return (
       <div className='App'>
-        <div className='spaces'>
+        <div className='dirs'>
           {
             this.state.items.map((dir, i) => {
               return(
 
-                <ul className='space'>
+                <ul className='dir'>
                   <h1>{i}</h1>
                   <h4>{this.state.path[i]}</h4>
                   {
@@ -128,7 +112,7 @@ class App extends Component {
                       else
                         return ( 
                           <Item
-                            onClick = { () => this.select(i, item.name) }
+                            onClick = { () => this.select(i, item.name, item.type) }
                             name = {item.name}
                             type = {item.type}
                           />

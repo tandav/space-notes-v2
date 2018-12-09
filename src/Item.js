@@ -2,9 +2,6 @@ import React, { Component } from 'react'
 import './App.css'
 
 const Item = props => {
-  if (props.selected) {
-    console.log(props.name, 'THIS IS WIN')
-  }
   return (
     <li 
       className = {props.selected ? 'item selected' : 'item'}
