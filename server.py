@@ -64,25 +64,6 @@ def every_dir_in_path():
         dirs.append(dir_items(path_i))
         path_i += '/'
     return jsonify(dirs)
-# @app.route('/every_dir_in_path', methods=['POST'])
-# def every_dir_in_path():
-#     root = request.get_json()['root']
-#     path = request.get_json()['path']
-#     print('root', root)
-#     print('path', path)
-    
-#     # root + rest = path
-#     rest = path.split(root)[-1]
-#     dirs = []
-#     path_i = root
-#     dirs.append(dir_items(path_i))
-
-#     for i in rest.split('/'):
-#         path_i += i
-#         print('PI:', path_i)
-#         dirs.append(dir_items(path_i))
-#         path_i += '/'
-#     return jsonify(dirs)
 
 @app.route('/last_dir_in_path', methods=['POST'])
 def last_dir_in_path():
