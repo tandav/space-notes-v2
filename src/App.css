@@ -21,3 +21,25 @@ table, th, td {
   margin: 0px;
   padding: 0px 5px 0px 5px;
 }
+.selected {
+  background-color: cornflowerblue;
+  color: white;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  /* font-family: Menlo; */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto";
+  /* font-size: 8pt; */
+  font-size: 8pt;
+}
+
+.file_folder_icon {
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.file_folder_icon:hover {
+  outline:1px solid rgba(0,0,0,0.3);
+}
