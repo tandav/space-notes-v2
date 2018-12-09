@@ -10,6 +10,7 @@ table, th, td {
   display: flex;
   /* outline: 1px solid black; */
   border: 1px solid black;
+  width: 1000px;
   height: 700px; /* need for dir owerflow scroll*/
 }
 
@@ -32,6 +33,7 @@ table, th, td {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto";
   /* font-size: 8pt; */
   font-size: 8pt;
+  white-space: nowrap;
 }
 
 /* item:not(.selected) */
@@ -55,4 +57,15 @@ table, th, td {
 
 .file_folder_icon:hover {
   outline:1px solid rgba(0,0,0,0.3);
+}
+
+
+.preview {
+  font-size: 8pt;
+  width: 400px;
+  background-color: rgba(0,0,0,0.1)
+}
+
+.app {
+  display: flex;
 }

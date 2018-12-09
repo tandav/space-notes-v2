@@ -24,7 +24,7 @@ def dir_items(path):
         if item != '.DS_Store':
             if os.path.isfile(f'{path}/{item}'):
                 files.append({ 'name' : item, 'type' : 'file' })
-            else:
+            elif os.path.isdir(f'{path}/{item}'):
                 folders.append({ 'name' : item, 'type' : 'folder' })
     items.extend(folders)
     items.extend(files)
@@ -33,29 +33,11 @@ def dir_items(path):
 def file_description(path):
     return f'{path} description description description description description description'
 
-# @app.route('/<path>', methods=['GET'])
-# http://flask.pocoo.org/snippets/57/
-# @app.route('/', defaults={'path': ''})
-# @app.route('/<path:path>')
-# def list_dir(path):
-#     print(path)
-#     path = '/' + path
-#     print(request.path)
-#     if os.path.isdir(path):
-#         return jsonify(dir_items(path))
-#     elif os.path.isfile(path):
-#         return jsonify({ 'file_description': file_description(path)})
-#     else:
-#         abort(404)
-
 @app.route('/every_dir_in_path', methods=['POST'])
 def every_dir_in_path():
     root = request.get_json()['root'] # root should be without / in the end
     path = request.get_json()['path']
-    print('root', root)
-    print('path', path)
     
-    # root + rest = path
     dirs = []
     path_i = root
 
@@ -68,5 +50,12 @@ def every_dir_in_path():
 @app.route('/last_dir_in_path', methods=['POST'])
 def last_dir_in_path():
     path = request.get_json()['path']
-    print(path)
     return jsonify(dir_items(path))
+
+@app.route('/file_description', methods=['POST'])
+def file_description():
+    path = request.get_json()['path']
+    return jsonify({
+        'abs_path': path,
+        'description': 'lorem ipsum dolor sit',
+    })

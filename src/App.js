@@ -2,12 +2,14 @@ import React, { Component } from 'react'
 import './App.css'
 import { host } from './index'
 import Item from './Item'
+import Preview from './Preview'
 
 class App extends Component {
   state = {
     root: '/Users/tandav',
     items: [],
     path: undefined,
+    preview: undefined,
   }
 
   componentDidMount() {
@@ -44,18 +46,20 @@ class App extends Component {
     return path_arr
   }
 
-  append_dir(path) {
 
-  }
 
 
   select(column_i, clicked_item, type) {
     // let n = fake_api()
     // console.log(new_selected_item)
+
+
+    let new_path_arr = this.state.path.slice(0, column_i + 1)
     if (type === 'folder') {
-      const new_path_arr = this.state.path.slice(0, column_i + 1).concat(clicked_item)
+
+      new_path_arr = new_path_arr.concat(clicked_item)
       const new_path_str = new_path_arr.join('/')
-  
+
       const opts = {
         method: 'post',
         headers: { 'content-type': 'application/json' },
@@ -63,6 +67,7 @@ class App extends Component {
           'path': new_path_str,
         })
       } 
+
       fetch(host + '/last_dir_in_path', opts)
       .then(response => { 
         if (response.ok) { return response.json() }
@@ -78,6 +83,31 @@ class App extends Component {
     }
     else {
       console.log('file descriptipn')
+
+      new_path_arr.concat(clicked_item)
+      const new_path_str = new_path_arr.join('/')
+      const file_abs_path = new_path_str + '/' + clicked_item
+      const opts = {
+        method: 'post',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ 
+          'path': file_abs_path,
+        })
+      } 
+
+      fetch(host + '/file_description', opts)
+      .then(response => { 
+        if (response.ok) { return response.json() }
+        else { console.error('Error in fetch') }
+      })
+      .then(json => {
+        window.history.pushState(null, null, new_path_str)
+        this.setState({
+          items: this.state.items.slice(0, column_i + 1),
+          path: new_path_arr,
+          preview: json,
+        })
+      })
     }
 
 
@@ -88,14 +118,14 @@ class App extends Component {
     console.log(this.state.items)
     console.log(this.state.path)
     return (
-      <div className='App'>
+      <div className='app'>
         <div className='dirs'>
           {
             this.state.items.map((dir, i) => {
               return(
 
                 <ul className='dir'>
-                  <h1>{i}</h1>
+                  <h4>{i}</h4>
                   <h4>{this.state.path[i]}</h4>
                   {
                     dir.map(item => {
@@ -120,14 +150,17 @@ class App extends Component {
                     })
                   }
                 </ul>
-
-
-
-
               )
             })
           }
         </div>
+        {
+          this.state.preview && 
+          <Preview
+            abs_path = {this.state.preview.abs_path}
+            description = {this.state.preview.description}
+          />
+        }
       </div>
     )
   }
