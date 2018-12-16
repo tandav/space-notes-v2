@@ -123,8 +123,8 @@ class App extends Component {
   // }
 
   select(column_i, clicked_item, type) {
-    let new_path_arr = this.state.path.slice(0, column_i + 1)
-    let new_path_str = new_path_arr.join('/')
+    // let new_path_arr = this.state.path.slice(0, column_i + 1)
+    // let new_path_str = new_path_arr.join('/')
     // let new_path_str
     // const url
     // if (type === 'file') {
@@ -137,15 +137,18 @@ class App extends Component {
 
     // }
     if (type === 'folder') {
-      new_path_arr = new_path_arr.concat(clicked_item)
+      const path_new = this.state.path.slice(0, column_i + 1).concat(clicked_item)
+      const path_new_str = path_new.join('/')
+      window.history.pushState(null, null, path_new_str)
+
       // new_path_str = new_path_arr.join('/')
       // const new_path_str = 
-      new_path_str += '/' + clicked_item
+      // new_path_str += '/' + clicked_item
       const opts = {
         method: 'post',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ 
-          'path': new_path_str,
+          'path': path_new_str,
         })
       }
 
@@ -154,20 +157,32 @@ class App extends Component {
       .then(json => {
         this.setState({
           dirs: this.state.dirs.slice(0, column_i + 1).concat([json]),
-          path: new_path_arr,
+          path: path_new,
           last_selected: {
-            'abs_path': new_path_str,
+            'abs_path': path_new_str,
             'type': type,
           }
-          // preview: {
-          //   'item': new_path_str,
-          //   'type': 'folder',
-          // },
         })
       })
     }
 
-    window.history.pushState(null, null, new_path_str)
+    if (type === 'file') {
+      const path_new = this.state.path.slice(0, column_i + 1)
+      const path_new_str = path_new.join('/')
+      window.history.pushState(null, null, path_new_str)
+
+      this.setState({
+        dirs: this.state.dirs.slice(0, column_i + 1),
+        path: path_new,
+        last_selected: {
+          'abs_path': path_new_str + '/' + clicked_item,
+          'type': type,
+        }
+      })
+
+
+    }
+
 
 
     // console.log(new_path_str)
@@ -224,7 +239,7 @@ class App extends Component {
                     dir.map(item => {
                       if (
                         item.name === this.state.path[i + 1] || 
-                        (this.state.preview && this.state.path.join('/') + '/' + item.name === this.state.preview.item)
+                        (this.state.last_selected && this.state.path.join('/') + '/' + item.name === this.state.last_selected.abs_path)
                       ) {
                         // console.warn('WIN')
                         return (
