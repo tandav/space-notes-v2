@@ -53,74 +53,16 @@ class App extends Component {
     return path_arr
   }
 
+  setState_App(state) { this.setState(state) }
 
-
-
-  // select(column_i, clicked_item, type) {
-  //   let new_path_arr = this.state.path.slice(0, column_i + 1)
-  //   if (type === 'folder') {
-
-  //     new_path_arr = new_path_arr.concat(clicked_item)
-  //     const new_path_str = new_path_arr.join('/')
-
-  //     const opts = {
-  //       method: 'post',
-  //       headers: { 'content-type': 'application/json' },
-  //       body: JSON.stringify({ 
-  //         'path': new_path_str,
-  //       })
-  //     } 
-
-  //     fetch(host + '/last_dir_in_path', opts)
-  //     .then(response => { 
-  //       if (response.ok) { return response.json() }
-  //       else { console.error('Error in fetch') }
-  //     })
-  //     .then(json => {
-  //       window.history.pushState(null, null, new_path_str)
-  //       this.setState({
-  //         items: this.state.items.slice(0, column_i + 1).concat([json]),
-  //         path: new_path_arr,
-  //         preview: {
-  //           'item': new_path_str,
-  //           'type': 'folder',
-  //         },
-  //       })
-  //     })
-  //   }
-  //   else {
-  //     console.log('file descriptipn')
-
-  //     new_path_arr.concat(clicked_item)
-  //     const new_path_str = new_path_arr.join('/')
-  //     const file_abs_path = new_path_str + '/' + clicked_item
-  //     const opts = {
-  //       method: 'post',
-  //       headers: { 'content-type': 'application/json' },
-  //       body: JSON.stringify({ 
-  //         'path': file_abs_path,
-  //       })
-  //     } 
-
-  //     fetch(host + '/file_description', opts)
-  //     .then(response => { 
-  //       if (response.ok) { return response.json() }
-  //       else { console.error('Error in fetch') }
-  //     })
-  //     .then(json => {
-  //       window.history.pushState(null, null, new_path_str)
-  //       this.setState({
-  //         items: this.state.items.slice(0, column_i + 1),
-  //         path: new_path_arr,
-  //         preview: {
-  //           'item': file_abs_path,
-  //           'data': json,
-  //           'type': 'file',
-  //         },
-  //       })
-  //     })
-  //   }
-  // }
+  eval_shell_script(script) {
+    let opts = { 
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ script: script })
+    }
+    return fetch(host + `/shell`, opts)
+  }
 
   select(column_i, clicked_item, type) {
     // let new_path_arr = this.state.path.slice(0, column_i + 1)
@@ -269,6 +211,9 @@ class App extends Component {
             <Preview 
               type = {this.state.last_selected.type}
               abs_path = {this.state.last_selected.abs_path}
+              eval_shell_script = {this.eval_shell_script}
+              setState_App = {state => this.setState_App(state)}
+              dirs = {this.state.dirs}
             />
           }
           {/* {

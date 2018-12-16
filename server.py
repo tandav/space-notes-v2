@@ -70,6 +70,9 @@ def open_in_finder():
 
 @app.route('/shell', methods=['POST'])
 def eval_shell_script():
+    # https://stackoverflow.com/a/6466753/4204843
     script = request.get_json()['script']
-    os.system(script)
-    return Response(None, 200)
+    if os.WEXITSTATUS(os.system(script)) == 0:
+        return Response(None, 200)
+    else:
+        return Response(None, 500)
