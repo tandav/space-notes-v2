@@ -105,7 +105,10 @@ class App extends Component {
         this.setState({
           items: this.state.items.slice(0, column_i + 1),
           path: new_path_arr,
-          preview: json,
+          preview: {
+            'item': file_abs_path,
+            'data': json
+          },
         })
       })
     }
@@ -129,7 +132,10 @@ class App extends Component {
                   <h4>{this.state.path[i]}</h4>
                   {
                     dir.map(item => {
-                      if (item.name === this.state.path[i + 1]) {
+                      if (
+                        item.name === this.state.path[i + 1] || 
+                        (this.state.preview && this.state.path.join('/') + '/' + item.name === this.state.preview.item)
+                      ) {
                         // console.warn('WIN')
                         return (
                           <Item 
@@ -153,14 +159,17 @@ class App extends Component {
               )
             })
           }
+          {
+            this.state.preview ?
+              <Preview
+                abs_path = {this.state.preview.item}
+                description = {this.state.preview.data.description}
+              />
+            :
+              <Preview empty />
+          }
         </div>
-        {
-          this.state.preview && 
-          <Preview
-            abs_path = {this.state.preview.abs_path}
-            description = {this.state.preview.description}
-          />
-        }
+
       </div>
     )
   }

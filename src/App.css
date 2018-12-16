@@ -50,12 +50,12 @@ table, th, td {
   color: white;
 }
 
-.file_folder_icon {
+.icon {
   margin-right: 5px;
   cursor: pointer;
 }
 
-.file_folder_icon:hover {
+.icon:hover {
   outline:1px solid rgba(0,0,0,0.3);
 }
 
@@ -63,9 +63,15 @@ table, th, td {
 .preview {
   font-size: 8pt;
   width: 400px;
-  background-color: rgba(0,0,0,0.1)
+  /* background-color: rgba(0,0,0,0.1) */
+  background-color: white;
 }
 
 .app {
   display: flex;
+}
+
+.image_preview {
+  width: 200px;
+  height: 100px;
 }

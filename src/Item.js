@@ -6,8 +6,8 @@ const Item = props => {
       className = {props.selected ? 'item selected' : 'item'}
       onClick = {props.onClick}
     >
-      {props.type === 'folder' && <img className='file_folder_icon' src='/folder.png' />}
-      {props.type === 'file' && <img className='file_folder_icon' src='/file.png' />}
+      {props.type === 'folder' && <img className='icon' src='/folder.png' />}
+      {props.type === 'file' && <img className='icon' src='/file.png' />}
       <span>{props.name}</span>
     </li>
   )

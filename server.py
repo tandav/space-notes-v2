@@ -2,8 +2,6 @@ from flask import Flask, request, jsonify, Response, abort, send_file
 import os
 
 
-SPACES_DIR = '/Users/tandav/Documents/spaces'
-
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
@@ -59,3 +57,7 @@ def file_description():
         'abs_path': path,
         'description': 'lorem ipsum dolor sit',
     })
+
+@app.route('/get_image', methods=['POST'])
+def get_image():
+    return send_file(request.get_json()['image_path'])
