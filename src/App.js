@@ -7,9 +7,10 @@ import Preview from './Preview'
 class App extends Component {
   state = {
     root: '/Users/tandav',
-    items: [],
+    dirs: [],
     path: undefined,
     preview: undefined,
+    last_selected: undefined,
   }
 
   componentDidMount() {
@@ -34,7 +35,13 @@ class App extends Component {
     }
     fetch(host + '/every_dir_in_path', opts)
     .then(response => { if (response.ok) return response.json()})
-    .then(json => { this.setState({ items: json }) })
+    .then(json => { this.setState({ 
+      dirs: json,
+      last_selected: {
+        'abs_path': window.location.pathname,
+        'type': 'folder',
+      }
+    }) })
   }
 
   path_split(root, path) {
@@ -49,72 +56,155 @@ class App extends Component {
 
 
 
+  // select(column_i, clicked_item, type) {
+  //   let new_path_arr = this.state.path.slice(0, column_i + 1)
+  //   if (type === 'folder') {
+
+  //     new_path_arr = new_path_arr.concat(clicked_item)
+  //     const new_path_str = new_path_arr.join('/')
+
+  //     const opts = {
+  //       method: 'post',
+  //       headers: { 'content-type': 'application/json' },
+  //       body: JSON.stringify({ 
+  //         'path': new_path_str,
+  //       })
+  //     } 
+
+  //     fetch(host + '/last_dir_in_path', opts)
+  //     .then(response => { 
+  //       if (response.ok) { return response.json() }
+  //       else { console.error('Error in fetch') }
+  //     })
+  //     .then(json => {
+  //       window.history.pushState(null, null, new_path_str)
+  //       this.setState({
+  //         items: this.state.items.slice(0, column_i + 1).concat([json]),
+  //         path: new_path_arr,
+  //         preview: {
+  //           'item': new_path_str,
+  //           'type': 'folder',
+  //         },
+  //       })
+  //     })
+  //   }
+  //   else {
+  //     console.log('file descriptipn')
+
+  //     new_path_arr.concat(clicked_item)
+  //     const new_path_str = new_path_arr.join('/')
+  //     const file_abs_path = new_path_str + '/' + clicked_item
+  //     const opts = {
+  //       method: 'post',
+  //       headers: { 'content-type': 'application/json' },
+  //       body: JSON.stringify({ 
+  //         'path': file_abs_path,
+  //       })
+  //     } 
+
+  //     fetch(host + '/file_description', opts)
+  //     .then(response => { 
+  //       if (response.ok) { return response.json() }
+  //       else { console.error('Error in fetch') }
+  //     })
+  //     .then(json => {
+  //       window.history.pushState(null, null, new_path_str)
+  //       this.setState({
+  //         items: this.state.items.slice(0, column_i + 1),
+  //         path: new_path_arr,
+  //         preview: {
+  //           'item': file_abs_path,
+  //           'data': json,
+  //           'type': 'file',
+  //         },
+  //       })
+  //     })
+  //   }
+  // }
+
   select(column_i, clicked_item, type) {
-    // let n = fake_api()
-    // console.log(new_selected_item)
-
-
     let new_path_arr = this.state.path.slice(0, column_i + 1)
+    let new_path_str = new_path_arr.join('/')
+    // let new_path_str
+    // const url
+    // if (type === 'file') {
+      // const new_path_str = new_path_arr.join('/')
+
+    // window.history.pushState(null, null, 
+      // .concat(clicked_item)
+      // this.state.path.slice(0, column_i + 1).join('/')
+    // )
+
+    // }
     if (type === 'folder') {
-
       new_path_arr = new_path_arr.concat(clicked_item)
-      const new_path_str = new_path_arr.join('/')
-
+      // new_path_str = new_path_arr.join('/')
+      // const new_path_str = 
+      new_path_str += '/' + clicked_item
       const opts = {
         method: 'post',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ 
           'path': new_path_str,
         })
-      } 
+      }
 
       fetch(host + '/last_dir_in_path', opts)
-      .then(response => { 
-        if (response.ok) { return response.json() }
-        else { console.error('Error in fetch') }
-      })
+      .then(response => { if (response.ok) { return response.json() } else { window.alert('Error in fetch' + response.status) }})
       .then(json => {
-        window.history.pushState(null, null, new_path_str)
         this.setState({
-          items: this.state.items.slice(0, column_i + 1).concat([json]),
+          dirs: this.state.dirs.slice(0, column_i + 1).concat([json]),
           path: new_path_arr,
-        })
-      })
-    }
-    else {
-      console.log('file descriptipn')
-
-      new_path_arr.concat(clicked_item)
-      const new_path_str = new_path_arr.join('/')
-      const file_abs_path = new_path_str + '/' + clicked_item
-      const opts = {
-        method: 'post',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ 
-          'path': file_abs_path,
-        })
-      } 
-
-      fetch(host + '/file_description', opts)
-      .then(response => { 
-        if (response.ok) { return response.json() }
-        else { console.error('Error in fetch') }
-      })
-      .then(json => {
-        window.history.pushState(null, null, new_path_str)
-        this.setState({
-          items: this.state.items.slice(0, column_i + 1),
-          path: new_path_arr,
-          preview: {
-            'item': file_abs_path,
-            'data': json
-          },
+          last_selected: {
+            'abs_path': new_path_str,
+            'type': type,
+          }
+          // preview: {
+          //   'item': new_path_str,
+          //   'type': 'folder',
+          // },
         })
       })
     }
 
+    window.history.pushState(null, null, new_path_str)
 
 
+    // console.log(new_path_str)
+    // new_path_arr.concat(clicked_item)
+
+ 
+    // else {
+    //   console.log('file descriptipn')
+
+    //   const new_path_str = new_path_arr.join('/')
+    //   const file_abs_path = new_path_str + '/' + clicked_item
+    //   const opts = {
+    //     method: 'post',
+    //     headers: { 'content-type': 'application/json' },
+    //     body: JSON.stringify({ 
+    //       'path': file_abs_path,
+    //     })
+    //   } 
+
+    //   fetch(host + '/file_description', opts)
+    //   .then(response => { 
+    //     if (response.ok) { return response.json() }
+    //     else { console.error('Error in fetch') }
+    //   })
+    //   .then(json => {
+    //     window.history.pushState(null, null, new_path_str)
+    //     this.setState({
+    //       items: this.state.items.slice(0, column_i + 1),
+    //       path: new_path_arr,
+    //       preview: {
+    //         'item': file_abs_path,
+    //         'data': json,
+    //         'type': 'file',
+    //       },
+    //     })
+    //   })
+    // }
   }
 
   render() {
@@ -124,7 +214,7 @@ class App extends Component {
       <div className='app'>
         <div className='dirs'>
           {
-            this.state.items.map((dir, i) => {
+            this.state.dirs.map((dir, i) => {
               return(
 
                 <ul className='dir'>
@@ -160,14 +250,22 @@ class App extends Component {
             })
           }
           {
+            this.state.last_selected &&
+            <Preview 
+              type = {this.state.last_selected.type}
+              abs_path = {this.state.last_selected.abs_path}
+            />
+          }
+          {/* {
             this.state.preview ?
               <Preview
+                type='file'
                 abs_path = {this.state.preview.item}
                 description = {this.state.preview.data.description}
               />
             :
-              <Preview empty />
-          }
+              <Preview type='folder' />
+          } */}
         </div>
 
       </div>

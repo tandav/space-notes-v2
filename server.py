@@ -61,3 +61,15 @@ def file_description():
 @app.route('/get_image', methods=['POST'])
 def get_image():
     return send_file(request.get_json()['image_path'])
+
+@app.route('/finder', methods=['POST'])
+def open_in_finder():
+    path = request.get_json()['path']
+    os.system(f'open -R "{path}"')
+    return Response(None, 200)
+
+@app.route('/shell', methods=['POST'])
+def eval_shell_script():
+    script = request.get_json()['script']
+    os.system(script)
+    return Response(None, 200)

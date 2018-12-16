@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { host } from './index'
 
 const isimage = path => {
   const image_extensions = [
@@ -16,23 +17,57 @@ const isimage = path => {
   }
 }
 
-const Preview = props => {
+class Preview extends Component {
 
-  if (props.empty) {
-    return <div className='preview'></div>
+
+  open_in_finder() {
+    const opts = {
+      method: 'post',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ 'path': this.props.abs_path })
+    }
+    fetch(host + '/finder', opts)
+    .then(response => { if (!response.ok) window.alert('Error in fetch' + response.status) })
+
   }
-  else {
+
+  eval_shell_script(script) {
+    let opts = { 
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ script: script })
+    }
+    fetch(host + `/shell`, opts)
+    .then(response => { if (!response.ok) window.alert('Error in fetch' + response.status) })
+  }
+
+  render() {
+    // if (this.props.type === 'folder') {
+    //   return <div className='preview'>folder preview</div>
+    // }
+    // if (this.props.type === 'file') {
     return (
       <div className='preview'>
         <h1>Item Preview</h1>
-        <li>{props.abs_path}</li>
-        <li>{props.description}</li>
-        {isimage(props.abs_path) && <img className='image_preview' src={ '/rootlink' + props.abs_path} />}
+        <li>{this.props.type}</li>
+        <li>{this.props.abs_path}</li>
+
+        <img className='icon' src='/finder.png'  onClick={() => this.eval_shell_script(`open -R '${this.props.abs_path}'`)}/>
+        <img className='icon' src='/sublime.png' onClick={() => this.eval_shell_script(`open -a 'Sublime Text' '${this.props.abs_path}'`)}/>
         <hr/>
-        <img className='icon' src='/finder.png' />
-        <img className='icon' src='/sublime.png' />
+
+        {
+          this.props.type === 'file' && (
+            <div>
+              <li>{this.props.description}</li>
+              {isimage(this.props.abs_path) && <img className='image_preview' src={ '/rootlink' + this.props.abs_path} />}
+            </div>
+          )
+        }
+
       </div>
     )
+    // }
   }
 }
 

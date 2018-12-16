@@ -10,16 +10,16 @@ table, th, td {
   display: flex;
   /* outline: 1px solid black; */
   border: 1px solid black;
-  width: 1000px;
+  /* width: 1000px; */
   height: 700px; /* need for dir owerflow scroll*/
 }
 
 .dir {
   list-style-type: none;
-  border: 1px solid black;
+  /* border: 1px solid black; */
 
   /* border-right: 1px solid black; */
-  /* border-right: 1px solid black; */
+  border-right: 1px solid rgba(0,0,0,0.2);
   margin: 0px;
   padding: 0px 5px 0px 5px;
   overflow: scroll;
@@ -62,7 +62,7 @@ table, th, td {
 
 .preview {
   font-size: 8pt;
-  width: 400px;
+  width: 200px;
   /* background-color: rgba(0,0,0,0.1) */
   background-color: white;
 }
