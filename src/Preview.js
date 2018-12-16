@@ -39,14 +39,12 @@ class Preview extends Component {
       this.props.eval_shell_script(`${new_item_command[type]} ${this.props.abs_path}/${new_item_name}`)
       .then(response => {
         if (response.ok) {
-          console.log('success actions')
           let dirs_tmp = this.props.dirs
           dirs_tmp[dirs_tmp.length - 1].push({
             'name' : new_item_name,
             'type' : type,
           })
-          this.props.setState_App({
-            dirs: dirs_tmp })
+          this.props.setState_App({ dirs: dirs_tmp })
         }
         else { window.alert('Error in fetch' + response.status) }
       })
@@ -54,25 +52,40 @@ class Preview extends Component {
     else { window.alert('error: empty name') }
   }
 
+  delete_item() {
+    this.props.eval_shell_script(`mv '${this.props.abs_path}' ~/.Trash/$(basename ${this.props.abs_path})`)
+    .then(response => {
+      if (response.ok) {
+        if (this.props.type === 'file') {
+          // todo: deselect etc
+        }
+        if (this.props.type === 'folder') {
+          // todo: deselect etc
+        }
+        // let dirs_tmp = this.props.dirs
+        // dirs_tmp[dirs_tmp.length - 1].push({
+        //   'name' : new_item_name,
+        //   'type' : type,
+        // })
+        // this.props.setState_App({ dirs: dirs_tmp })
+      }
+      else { window.alert('Error in fetch' + response.status) }
+    })
+  }
+
   render() {
-    // if (this.props.type === 'folder') {
-    //   return <div className='preview'>folder preview</div>
-    // }
-    // if (this.props.type === 'file') {
     return (
       <div className='preview'>
-        <h1>Item Preview</h1>
-        <li>{this.props.type}</li>
-        <li>{this.props.abs_path}</li>
-
+        <h1>{this.props.type}</h1>
+        <p>{this.props.abs_path}</p>
         <img className='icon' src='/finder.png'  onClick={() => this.props.eval_shell_script(`open -R '${this.props.abs_path}'`)}/>
         <img className='icon' src='/sublime.png' onClick={() => this.props.eval_shell_script(`open -a 'Sublime Text' '${this.props.abs_path}'`)}/>
+        <img className='icon' src='/trash.png'   onClick={() => this.delete_item()} />
         <hr/>
 
         {
           this.props.type === 'file' && (
             <div>
-              <li>{this.props.description}</li>
               {isimage(this.props.abs_path) && <img className='image_preview' src={ '/rootlink' + this.props.abs_path} />}
             </div>
           )
