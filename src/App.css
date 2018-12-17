@@ -75,3 +75,7 @@ table, th, td {
   width: 200px;
   height: 100px;
 }
+
+textarea {
+  font-family: Menlo;
+}

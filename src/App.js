@@ -11,6 +11,7 @@ class App extends Component {
     dirs_path: undefined,
     // preview: undefined,
     selected_file: undefined, // may exists after dirs_path
+    file_info: undefined,
   }
 
   componentDidMount() {
@@ -95,7 +96,7 @@ class App extends Component {
           dirs: this.state.dirs.slice(0, column_i + 1).concat([json]),
           dirs_path: path_new,
           selected_file: undefined,
-        })
+        }, this.update_file_info)
       })
     }
 
@@ -108,48 +109,25 @@ class App extends Component {
         dirs: this.state.dirs.slice(0, column_i + 1),
         dirs_path: path_new,
         selected_file: clicked_item,
-      })
-
-
+      }, this.update_file_info)
     }
+  }
 
-
-
-    // console.log(new_path_str)
-    // new_path_arr.concat(clicked_item)
-
- 
-    // else {
-    //   console.log('file descriptipn')
-
-    //   const new_path_str = new_path_arr.join('/')
-    //   const file_abs_path = new_path_str + '/' + clicked_item
-    //   const opts = {
-    //     method: 'post',
-    //     headers: { 'content-type': 'application/json' },
-    //     body: JSON.stringify({ 
-    //       'path': file_abs_path,
-    //     })
-    //   } 
-
-    //   fetch(host + '/file_description', opts)
-    //   .then(response => { 
-    //     if (response.ok) { return response.json() }
-    //     else { console.error('Error in fetch') }
-    //   })
-    //   .then(json => {
-    //     window.history.pushState(null, null, new_path_str)
-    //     this.setState({
-    //       items: this.state.items.slice(0, column_i + 1),
-    //       path: new_path_arr,
-    //       preview: {
-    //         'item': file_abs_path,
-    //         'data': json,
-    //         'type': 'file',
-    //       },
-    //     })
-    //   })
-    // }
+  update_file_info() {
+    if (this.state.selected_file) {
+      console.log(this.props.type, this.props.abs_path)
+      const opts = {
+        method: 'post',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ 'path': this.state.dirs_path.join('/') + '/' + this.state.selected_file })
+      }
+      fetch(host + '/file_info', opts)
+      .then(response => { if (response.ok) return response.json()})
+      .then(json => { this.setState({ file_info: json }) })
+    }
+    else {
+      this.setState({file_info: undefined})
+    }
   }
 
   make_preview() {
@@ -162,6 +140,7 @@ class App extends Component {
           eval_shell_script = {this.eval_shell_script}
           setState_App = {state => this.setState_App(state)}
           dirs = {this.state.dirs}
+          file_info = {this.state.file_info}
         />
       }
       else {

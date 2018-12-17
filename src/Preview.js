@@ -19,7 +19,6 @@ const isimage = path => {
 
 class Preview extends Component {
 
-
   open_in_finder() {
     const opts = {
       method: 'post',
@@ -72,8 +71,32 @@ class Preview extends Component {
       else { window.alert('Error in fetch' + response.status) }
     })
   }
+  
+  is_text() {
+    if (this.props.file_info) {
+      if (this.props.file_info.is_text) {
+        return (
+          <div>
+            <textarea
+              placeholder = {this.props.file_info.head}
+              // placeholder = 'flkfs;ldkf;lsdkl;'
+              // cols = '40'
+              rows = '10'
+            />
+            <span>text</span>
+          </div>
+        )
+      }
+      else {
+        return 'binary'
+      }
+    }
+    
+  }
 
   render() {
+
+
     if (this.props.abs_path) {
       return (
         <div className='preview'>
@@ -88,6 +111,7 @@ class Preview extends Component {
             this.props.type === 'file' && (
               <div>
                 {isimage(this.props.abs_path) && <img className='image_preview' src={ '/rootlink' + this.props.abs_path} />}
+                {this.is_text()}
               </div>
             )
           }

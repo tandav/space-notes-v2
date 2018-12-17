@@ -1,10 +1,12 @@
 from flask import Flask, request, jsonify, Response, abort, send_file
 import os
 
-
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
+# https://stackoverflow.com/a/7392391
+textchars = bytearray({7,8,9,10,12,13,27} | set(range(0x20, 0x100)) - {0x7f})
+is_text_file = lambda bytes: not bool(bytes.translate(None, textchars))
 
 @app.after_request
 def after_request(response):
@@ -29,6 +31,7 @@ def dir_items(path):
     return items
 
 def file_description(path):
+    # 'is_text': is_text_file(item)
     return f'{path} description description description description description description'
 
 @app.route('/every_dir_in_path', methods=['POST'])
@@ -53,13 +56,19 @@ def last_dir_in_path():
     path = request.get_json()['path']
     return jsonify(dir_items(path))
 
-@app.route('/file_description', methods=['POST'])
-def file_description():
+@app.route('/file_info', methods=['POST'])
+def file_info():
     path = request.get_json()['path']
-    return jsonify({
-        'abs_path': path,
-        'description': 'lorem ipsum dolor sit',
-    })
+
+    info = {}
+    info['description'] = 'lorem ipsum dolor sit'
+    info['is_text'] = is_text_file(open(path, 'rb').read(1024))
+
+    if info['is_text']:
+        with open(path) as f:
+            info['head'] = '\n'.join([next(f) for i in range(10)])
+
+    return jsonify(info)
 
 @app.route('/get_image', methods=['POST'])
 def get_image():
