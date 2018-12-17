@@ -78,4 +78,7 @@ table, th, td {
 
 textarea {
   font-family: Menlo;
+  white-space: pre;
+  overflow-wrap: normal;
+  overflow-x: scroll;
 }

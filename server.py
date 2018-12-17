@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, Response, abort, send_file
 import os
+from itertools import islice
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -66,7 +67,7 @@ def file_info():
 
     if info['is_text']:
         with open(path) as f:
-            info['head'] = '\n'.join([next(f) for i in range(10)])
+            info['head'] = ''.join(list(islice(f, 10)))
 
     return jsonify(info)
 
