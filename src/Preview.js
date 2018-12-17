@@ -74,35 +74,39 @@ class Preview extends Component {
   }
 
   render() {
-    return (
-      <div className='preview'>
-        <h1>{this.props.type}</h1>
-        <p>{this.props.abs_path}</p>
-        <img className='icon' src='/finder.png'  onClick={() => this.props.eval_shell_script(`open -R '${this.props.abs_path}'`)}/>
-        <img className='icon' src='/sublime.png' onClick={() => this.props.eval_shell_script(`open -a 'Sublime Text' '${this.props.abs_path}'`)}/>
-        <img className='icon' src='/trash.png'   onClick={() => this.delete_item()} />
-        <hr/>
-
-        {
-          this.props.type === 'file' && (
-            <div>
-              {isimage(this.props.abs_path) && <img className='image_preview' src={ '/rootlink' + this.props.abs_path} />}
-            </div>
-          )
-        }
-        {
-          this.props.type === 'folder' && (
-            <div>
-              <span>new</span>
-              <img className='icon' src='/folder.png' onClick={() => this.new_item('folder')}/>
-              <img className='icon' src='/file.png'   onClick={() => this.new_item('file'  )}/>
-            </div>
-          )
-        }
-
-      </div>
-    )
-    // }
+    if (this.props.abs_path) {
+      return (
+        <div className='preview'>
+          <h1>{this.props.type}</h1>
+          <p>{this.props.abs_path}</p>
+          <img className='icon' src='/finder.png'  onClick={() => this.props.eval_shell_script(`open -R '${this.props.abs_path}'`)}/>
+          <img className='icon' src='/sublime.png' onClick={() => this.props.eval_shell_script(`open -a 'Sublime Text' '${this.props.abs_path}'`)}/>
+          <img className='icon' src='/trash.png'   onClick={() => this.delete_item()} />
+          <hr/>
+  
+          {
+            this.props.type === 'file' && (
+              <div>
+                {isimage(this.props.abs_path) && <img className='image_preview' src={ '/rootlink' + this.props.abs_path} />}
+              </div>
+            )
+          }
+          {
+            this.props.type === 'folder' && (
+              <div>
+                <span>new</span>
+                <img className='icon' src='/folder.png' onClick={() => this.new_item('folder')}/>
+                <img className='icon' src='/file.png'   onClick={() => this.new_item('file'  )}/>
+              </div>
+            )
+          }
+  
+        </div>
+      )
+    }
+    else {
+      return <div className='preview'></div>
+    }
   }
 }
 

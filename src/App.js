@@ -35,13 +35,7 @@ class App extends Component {
     }
     fetch(host + '/every_dir_in_path', opts)
     .then(response => { if (response.ok) return response.json()})
-    .then(json => { this.setState({ 
-      dirs: json,
-      last_selected: {
-        'abs_path': window.location.pathname,
-        'type': 'folder',
-      }
-    }) })
+    .then(json => { this.setState({ dirs: json }) })
   }
   
   path_split(root, path) {
@@ -205,9 +199,7 @@ class App extends Component {
                       if (
                         item.name === this.state.dirs_path[i + 1] || 
                         (this.state.selected_file && (i + 1) === this.state.dirs_path.length && this.state.selected_file === item.name)
-                        // (this.state.last_selected && this.state.dirs_path.join('/') + '/' + item.name === this.state.last_selected.abs_path)
                       ) {
-                        // console.warn('WIN')
                         return (
                           <Item 
                             selected
