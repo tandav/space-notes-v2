@@ -8,9 +8,9 @@ class App extends Component {
   state = {
     root: '/Users/tandav',
     dirs: [],
-    path: undefined,
-    preview: undefined,
-    last_selected: undefined,
+    dirs_path: undefined,
+    // preview: undefined,
+    selected_file: undefined, // may exists after dirs_path
   }
 
   componentDidMount() {
@@ -18,7 +18,7 @@ class App extends Component {
     // this.append_dir(window.location.pathname)
     // console.log(this.append_dir(window.location.pathname))
     this.setState({
-      path: this.path_split(
+      dirs_path: this.path_split(
         this.state.root, window.location.pathname
       )
     }, this.fetch_every_dir)
@@ -29,8 +29,8 @@ class App extends Component {
       method: 'post',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ 
-        'root': this.state.path[0],
-        'path': window.location.pathname,
+        // 'root': this.state.dirs_path[0],
+        'path': this.state.dirs_path,
       })
     }
     fetch(host + '/every_dir_in_path', opts)
@@ -43,7 +43,7 @@ class App extends Component {
       }
     }) })
   }
-
+  
   path_split(root, path) {
     console.log(root, path)
     let path_arr = []
@@ -79,7 +79,7 @@ class App extends Component {
 
     // }
     if (type === 'folder') {
-      const path_new = this.state.path.slice(0, column_i + 1).concat(clicked_item)
+      const path_new = this.state.dirs_path.slice(0, column_i + 1).concat(clicked_item)
       const path_new_str = path_new.join('/')
       window.history.pushState(null, null, path_new_str)
 
@@ -99,27 +99,21 @@ class App extends Component {
       .then(json => {
         this.setState({
           dirs: this.state.dirs.slice(0, column_i + 1).concat([json]),
-          path: path_new,
-          last_selected: {
-            'abs_path': path_new_str,
-            'type': type,
-          }
+          dirs_path: path_new,
+          selected_file: undefined,
         })
       })
     }
 
     if (type === 'file') {
-      const path_new = this.state.path.slice(0, column_i + 1)
+      const path_new = this.state.dirs_path.slice(0, column_i + 1)
       const path_new_str = path_new.join('/')
       window.history.pushState(null, null, path_new_str)
 
       this.setState({
         dirs: this.state.dirs.slice(0, column_i + 1),
-        path: path_new,
-        last_selected: {
-          'abs_path': path_new_str + '/' + clicked_item,
-          'type': type,
-        }
+        dirs_path: path_new,
+        selected_file: clicked_item,
       })
 
 
@@ -164,9 +158,38 @@ class App extends Component {
     // }
   }
 
+  make_preview() {
+    let preview
+    if (this.state.dirs_path) {
+      if (this.state.selected_file) {
+        preview = <Preview 
+          type = 'file'
+          abs_path = {this.state.dirs_path.join('/') + '/' + this.state.selected_file}
+          eval_shell_script = {this.eval_shell_script}
+          setState_App = {state => this.setState_App(state)}
+          dirs = {this.state.dirs}
+        />
+      }
+      else {
+        preview = <Preview 
+          type = 'folder'
+          abs_path = {this.state.dirs_path.join('/')}
+          eval_shell_script = {this.eval_shell_script}
+          setState_App = {state => this.setState_App(state)}
+          dirs = {this.state.dirs}
+        />
+      }
+    }
+    else {
+      preview = <Preview />
+    }
+    return preview
+  }
+
   render() {
-    console.log(this.state.items)
-    console.log(this.state.path)
+
+    
+
     return (
       <div className='app'>
         <div className='dirs'>
@@ -176,17 +199,19 @@ class App extends Component {
 
                 <ul className='dir'>
                   <h4>{i}</h4>
-                  <h4>{this.state.path[i]}</h4>
+                  <h4>{this.state.dirs_path[i]}</h4>
                   {
                     dir.map(item => {
                       if (
-                        item.name === this.state.path[i + 1] || 
-                        (this.state.last_selected && this.state.path.join('/') + '/' + item.name === this.state.last_selected.abs_path)
+                        item.name === this.state.dirs_path[i + 1] || 
+                        (this.state.selected_file && (i + 1) === this.state.dirs_path.length && this.state.selected_file === item.name)
+                        // (this.state.last_selected && this.state.dirs_path.join('/') + '/' + item.name === this.state.last_selected.abs_path)
                       ) {
                         // console.warn('WIN')
                         return (
                           <Item 
                             selected
+                            onClick = { () => this.select(i, item.name, item.type) }
                             name = {item.name} 
                             type = {item.type}
                           />
@@ -206,16 +231,7 @@ class App extends Component {
               )
             })
           }
-          {
-            this.state.last_selected &&
-            <Preview 
-              type = {this.state.last_selected.type}
-              abs_path = {this.state.last_selected.abs_path}
-              eval_shell_script = {this.eval_shell_script}
-              setState_App = {state => this.setState_App(state)}
-              dirs = {this.state.dirs}
-            />
-          }
+          {this.make_preview()}
           {/* {
             this.state.preview ?
               <Preview

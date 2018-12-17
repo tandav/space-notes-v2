@@ -33,16 +33,19 @@ def file_description(path):
 
 @app.route('/every_dir_in_path', methods=['POST'])
 def every_dir_in_path():
-    root = request.get_json()['root'] # root should be without / in the end
+    # root = request.get_json()['root'] # root should be without / in the end
     path = request.get_json()['path']
     
+    dir_i = ''
     dirs = []
-    path_i = root
-
-    for i in path.split(root)[-1].split('/'):
-        path_i += i
-        dirs.append(dir_items(path_i))
-        path_i += '/'
+    # path_i = root
+    # path_i = path[0]
+    # path 
+    # for dir_i in path.split(root)[-1].split('/'):
+    for p in path:
+        dir_i += p
+        dirs.append(dir_items(dir_i))
+        dir_i += '/'
     return jsonify(dirs)
 
 @app.route('/last_dir_in_path', methods=['POST'])
