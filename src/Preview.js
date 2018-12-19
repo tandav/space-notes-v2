@@ -77,18 +77,19 @@ class Preview extends Component {
       if (this.props.file_info.is_text) {
         return (
           <div>
+            <p>text</p>
             <textarea
-              placeholder = {this.props.file_info.head}
+              defaultValue = {this.props.file_info.head}
+              // placeholder = {this.props.file_info.head}
               // placeholder = 'flkfs;ldkf;lsdkl;'
-              // cols = '40'
-              rows = '10'
+              cols = '50'
+              rows = '40'
             />
-            <span>text</span>
           </div>
         )
       }
       else {
-        return 'binary'
+        return <p>binary</p>
       }
     }
     
@@ -110,8 +111,8 @@ class Preview extends Component {
           {
             this.props.type === 'file' && (
               <div>
-                {isimage(this.props.abs_path) && <img className='image_preview' src={ '/rootlink' + this.props.abs_path} />}
                 {this.is_text()}
+                {isimage(this.props.abs_path) && <img className='image_preview' src={ '/rootlink' + this.props.abs_path} />}
               </div>
             )
           }

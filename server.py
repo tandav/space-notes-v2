@@ -67,7 +67,8 @@ def file_info():
 
     if info['is_text']:
         with open(path) as f:
-            info['head'] = ''.join(list(islice(f, 10)))
+            # info['head'] = ''.join(list(islice(f, 100))) # read 100 lines
+            info['head'] = f.read(1000) # read 1000 characters
 
     return jsonify(info)
 
