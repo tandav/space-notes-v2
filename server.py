@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, Response, abort, send_file
 import os
 from itertools import islice
+import pathlib
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -18,18 +19,15 @@ def after_request(response):
 
 
 def dir_items(path):
-    items   = []
-    files   = []
-    folders = []
-    for item in os.listdir(path):
-        if item != '.DS_Store':
-            if os.path.isfile(f'{path}/{item}'):
-                files.append({ 'name' : item, 'type' : 'file' })
-            elif os.path.isdir(f'{path}/{item}'):
-                folders.append({ 'name' : item, 'type' : 'folder' })
-    items.extend(folders)
-    items.extend(files)
-    return items
+    files, folders = [], []
+    for item in sorted(pathlib.Path(path).iterdir()):
+        if item.name == '.DS_Store':
+            continue
+        if item.is_file():
+            files.append({'name': item.name, 'type': 'file'})
+        if item.is_dir():
+            folders.append({'name': item.name, 'type': 'folder'})
+    return folders + files
 
 def file_description(path):
     # 'is_text': is_text_file(item)
