@@ -77,7 +77,7 @@ table, th, td {
 }
 
 textarea {
-  font-family: Menlo;
+  font-family: 'SF Mono', Menlo;
   white-space: pre;
   overflow-wrap: normal;
   overflow-x: scroll;
