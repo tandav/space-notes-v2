@@ -2,13 +2,12 @@ from flask import Flask, request, jsonify, Response, abort, send_file
 import os
 from itertools import islice
 import pathlib
+import path_utils
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
-# https://stackoverflow.com/a/7392391
-textchars = bytearray({7,8,9,10,12,13,27} | set(range(0x20, 0x100)) - {0x7f})
-is_text_file = lambda bytes: not bool(bytes.translate(None, textchars))
+
 
 @app.after_request
 def after_request(response):
@@ -17,17 +16,6 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE')
     return response
 
-
-def dir_items(path):
-    files, folders = [], []
-    for item in sorted(pathlib.Path(path).iterdir()):
-        if item.name == '.DS_Store':
-            continue
-        if item.is_file():
-            files.append({'name': item.name, 'type': 'file'})
-        if item.is_dir():
-            folders.append({'name': item.name, 'type': 'folder'})
-    return folders + files
 
 def file_description(path):
     # 'is_text': is_text_file(item)
@@ -46,29 +34,19 @@ def every_dir_in_path():
     # for dir_i in path.split(root)[-1].split('/'):
     for p in path:
         dir_i += p
-        dirs.append(dir_items(dir_i))
+        dirs.append(path_utils.dir_items(dir_i))
         dir_i += '/'
     return jsonify(dirs)
 
 @app.route('/last_dir_in_path', methods=['POST'])
 def last_dir_in_path():
     path = request.get_json()['path']
-    return jsonify(dir_items(path))
+    return jsonify(path_utils.dir_items(path))
 
 @app.route('/file_info', methods=['POST'])
 def file_info():
     path = request.get_json()['path']
-
-    info = {}
-    info['description'] = 'lorem ipsum dolor sit'
-    info['is_text'] = is_text_file(open(path, 'rb').read(1024))
-
-    if info['is_text']:
-        with open(path) as f:
-            # info['head'] = ''.join(list(islice(f, 100))) # read 100 lines
-            info['head'] = f.read(1000) # read 1000 characters
-
-    return jsonify(info)
+    return jsonify(path_utils.file_info(path))
 
 @app.route('/get_image', methods=['POST'])
 def get_image():
