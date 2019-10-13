@@ -2,11 +2,11 @@ from flask import Flask, request, jsonify, Response, abort, send_file
 import os
 from itertools import islice
 import pathlib
+import config
 import path_utils
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
-
 
 
 @app.after_request
@@ -21,27 +21,27 @@ def file_description(path):
     # 'is_text': is_text_file(item)
     return f'{path} description description description description description description'
 
-@app.route('/every_dir_in_path', methods=['POST'])
-def every_dir_in_path():
-    # root = request.get_json()['root'] # root should be without / in the end
-    path = request.get_json()['path']
-    
-    dir_i = ''
-    dirs = []
-    # path_i = root
-    # path_i = path[0]
-    # path 
-    # for dir_i in path.split(root)[-1].split('/'):
-    for p in path:
-        dir_i += p
-        dirs.append(path_utils.dir_items(dir_i))
-        dir_i += '/'
-    return jsonify(dirs)
 
-@app.route('/last_dir_in_path', methods=['POST'])
-def last_dir_in_path():
-    path = request.get_json()['path']
-    return jsonify(path_utils.dir_items(path))
+@app.route('/path/<path:path>', methods=['GET'])
+def get_space_notes_and_files(path):
+    '''returns info about every dir in path'''
+    print(path)
+    dir_i = config.root
+    dirs_path = [str(dir_i)]
+    dirs = [path_utils.dir_items(dir_i)]
+
+    for part in path.split('/'):
+        dir_i /= part
+        dirs.append(path_utils.dir_items(dir_i))
+        dirs_path.append(dir_i.name)
+    return jsonify({
+        'dirs': dirs,
+        'path': dirs_path,
+    })
+
+@app.route('/last_dir_in_path/<path:path>', methods=['GET'])
+def last_dir_in_path(path):
+    return jsonify(path_utils.dir_items(config.root / path))
 
 @app.route('/file_info', methods=['POST'])
 def file_info():

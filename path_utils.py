@@ -3,7 +3,7 @@ import pathlib
 
 def dir_items(path):
     files, folders = [], []
-    for item in sorted(pathlib.Path(path).iterdir()):
+    for item in sorted(path.iterdir()):
         if item.name == '.DS_Store':
             continue
         if item.is_file():
