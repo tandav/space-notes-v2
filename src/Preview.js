@@ -103,16 +103,16 @@ class Preview extends Component {
         <div className='preview'>
           <h1>{this.props.type}</h1>
           <p>{this.props.abs_path}</p>
-          <img className='icon' src='/finder.png'  onClick={() => this.props.eval_shell_script(`open -R '${this.props.abs_path}'`)}/>
-          <img className='icon' src='/sublime.png' onClick={() => this.props.eval_shell_script(`open -a 'Sublime Text' '${this.props.abs_path}'`)}/>
-          <img className='icon' src='/trash.png'   onClick={() => this.delete_item()} />
+          <img className='icon' src='/finder.png'  onClick={() => this.props.eval_shell_script(`open -R '${this.props.abs_path}'`)} alt='finder icon'/>
+          <img className='icon' src='/sublime.png' onClick={() => this.props.eval_shell_script(`open -a 'Sublime Text' '${this.props.abs_path}'`)} alt='sublime text icon' />
+          <img className='icon' src='/trash.png'   onClick={() => this.delete_item()} alt='trash icon' />
           <hr/>
   
           {
             this.props.type === 'file' && (
               <div>
                 {this.is_text()}
-                {isimage(this.props.abs_path) && <img className='image_preview' src={ '/rootlink' + this.props.abs_path} />}
+                {isimage(this.props.abs_path) && <img className='image_preview' src={ '/rootlink' + this.props.abs_path} alt='preview'/>}
               </div>
             )
           }
@@ -120,8 +120,8 @@ class Preview extends Component {
             this.props.type === 'folder' && (
               <div>
                 <span>new</span>
-                <img className='icon' src='/folder.png' onClick={() => this.new_item('folder')}/>
-                <img className='icon' src='/file.png'   onClick={() => this.new_item('file'  )}/>
+                <img className='icon' src='/folder.png' onClick={() => this.new_item('folder')} alt='folder icon'/>
+                <img className='icon' src='/file.png'   onClick={() => this.new_item('file'  )} alt = 'file icon'/>
               </div>
             )
           }

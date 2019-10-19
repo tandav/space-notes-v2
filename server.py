@@ -27,7 +27,8 @@ def get_space_notes_and_files(path):
     '''returns info about every dir in path'''
     print(path)
     dir_i = config.root
-    dirs_path = [str(dir_i)]
+    # dirs_path = [str(dir_i)]
+    dirs_path = ['']
     dirs = [path_utils.dir_items(dir_i)]
 
     for part in path.split('/'):

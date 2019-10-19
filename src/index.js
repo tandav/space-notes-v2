@@ -5,7 +5,7 @@ import App from './App'
 // import Editor from './Editor'
 import * as serviceWorker from './serviceWorker'
 
-export const host = 'http://localhost:5002'
+export const host = 'http://localhost:5000'
 
 
 ReactDOM.render(<App />, document.getElementById('root'))

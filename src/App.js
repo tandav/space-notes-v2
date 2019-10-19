@@ -1,223 +1,122 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import './App.css'
 import { host } from './index'
 import Item from './Item'
 import Preview from './Preview'
 
-class App extends Component {
-  state = {
-    root: '/Users/tandav',
-    dirs: [],
-    dirs_path: undefined,
-    // preview: undefined,
-    selected_file: undefined, // may exists after dirs_path
-    file_info: undefined,
-  }
+const App = () => {
+  const [selected_item, set_selected_item] = useState() // selected here means in the last column/folder (with preview)
+  const [dirs, set_dirs] = useState([])
+  const [path, set_path] = useState([])
+  const downloads_url = 'http://localhost:5000/last_dir_in_path/Downloads'
 
-  componentDidMount() {
-    // console.log(window.location.pathname)
-    // this.append_dir(window.location.pathname)
-    // console.log(this.append_dir(window.location.pathname))
-    this.setState({
-      dirs_path: this.path_split(
-        this.state.root, window.location.pathname
-      )
-    }, this.fetch_every_dir)
-  }
-
-  fetch_every_dir() {
-    const opts = {
-      method: 'post',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ 
-        // 'root': this.state.dirs_path[0],
-        'path': this.state.dirs_path,
-      })
+  useEffect(() => {
+    const fetch_dirs = async () => {
+      const response = await fetch(host + '/path' + window.location.pathname);
+      const data = await response.json();
+      set_dirs(data.dirs);
+      set_path(data.path);
     }
-    fetch(host + '/every_dir_in_path', opts)
-    .then(response => { if (response.ok) return response.json()})
-    .then(json => { this.setState({ dirs: json }) })
-  }
-  
-  path_split(root, path) {
-    console.log(root, path)
-    let path_arr = []
-    path_arr.push(root)
-    path_arr = path_arr.concat(path.split(root + '/')[1].split('/'))
-    // console.log(path_arr)
-    return path_arr
-  }
+    fetch_dirs();
+  }, [])
 
-  setState_App(state) { this.setState(state) }
+  // const fetch_downloads = async () => {
+  //   const response = await fetch(downloads_url)
+  //   const data = await response.text()
+  //   set_dirs(data)
+  // }
 
-  eval_shell_script(script) {
-    let opts = { 
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ script: script })
+  // const select_item = async (column_i, item_name, item_type) => {
+  //   if (item_type === 'folder') {
+  //     // set_dirs(dirs.slice(0, column_i + 1).concat(item_name))
+  //     // set_dirs_path(dirs_path.slice(0, column_i + 1).concat(item_name))
+
+  //     const path_new = path.slice(0, column_i + 1).concat(item_name)
+  //     // const path_new_str = path_new.slice(1).join('/')
+  //     const path_new_str = path_new.join('/')
+  //     console.log(path_new, path_new_str)
+  //     // window.history.pushState(null, null, path_new_str)
+  //     const response = await fetch(host + '/last_dir_in_path/' + path_new.slice(1).join('/'))
+  //     const data = await response.json()
+  //     set_dirs(dirs.slice(0, column_i + 1).concat([data]))
+  //     set_path(path.slice(0, column_i + 1).concat(item_name))
+  //   }
+  //   set_selected_item(item_name)
+  // }
+  const select_item = async (column_i, item) => {
+    if (item.type === 'folder') {
+      // set_dirs(dirs.slice(0, column_i + 1).concat(item_name))
+      // set_dirs_path(dirs_path.slice(0, column_i + 1).concat(item_name))
+
+      const path_new = path.slice(0, column_i + 1).concat(item.name)
+      // const path_new_str = path_new.slice(1).join('/')
+      const path_new_str = path_new.join('/')
+      console.log(path_new, path_new_str)
+      window.history.pushState(null, null, path_new_str)
+      const response = await fetch(host + '/last_dir_in_path/' + path_new.slice(1).join('/'))
+      const data = await response.json()
+      set_dirs(dirs.slice(0, column_i + 1).concat([data]))
+      set_path(path.slice(0, column_i + 1).concat(item.name))
     }
-    return fetch(host + `/shell`, opts)
-  }
 
-  select(column_i, clicked_item, type) {
-    // let new_path_arr = this.state.path.slice(0, column_i + 1)
-    // let new_path_str = new_path_arr.join('/')
-    // let new_path_str
-    // const url
-    // if (type === 'file') {
-      // const new_path_str = new_path_arr.join('/')
-
-    // window.history.pushState(null, null, 
-      // .concat(clicked_item)
-      // this.state.path.slice(0, column_i + 1).join('/')
-    // )
-
-    // }
-    if (type === 'folder') {
-      const path_new = this.state.dirs_path.slice(0, column_i + 1).concat(clicked_item)
+    if (item.type == 'file') {
+      // TODO: add filename to url (link to file)
+      const path_new = path.slice(0, column_i + 1)
       const path_new_str = path_new.join('/')
       window.history.pushState(null, null, path_new_str)
-
-      // new_path_str = new_path_arr.join('/')
-      // const new_path_str = 
-      // new_path_str += '/' + clicked_item
-      const opts = {
-        method: 'post',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ 
-          'path': path_new_str,
-        })
-      }
-
-      fetch(host + '/last_dir_in_path', opts)
-      .then(response => { if (response.ok) { return response.json() } else { window.alert('Error in fetch' + response.status) }})
-      .then(json => {
-        this.setState({
-          dirs: this.state.dirs.slice(0, column_i + 1).concat([json]),
-          dirs_path: path_new,
-          selected_file: undefined,
-        }, this.update_file_info)
-      })
+      set_dirs(dirs.slice(0, column_i + 1))
+      set_path(path.slice(0, column_i + 1))
     }
 
-    if (type === 'file') {
-      const path_new = this.state.dirs_path.slice(0, column_i + 1)
-      const path_new_str = path_new.join('/')
-      window.history.pushState(null, null, path_new_str)
-
-      this.setState({
-        dirs: this.state.dirs.slice(0, column_i + 1),
-        dirs_path: path_new,
-        selected_file: clicked_item,
-      }, this.update_file_info)
-    }
+    set_selected_item(item.name)
   }
 
-  update_file_info() {
-    if (this.state.selected_file) {
-      console.log(this.props.type, this.props.abs_path)
-      const opts = {
-        method: 'post',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ 'path': this.state.dirs_path.join('/') + '/' + this.state.selected_file })
+  return (
+    <div className='app'>
+      {
+        dirs.map((dir, i) => { return (
+          <ul key = {i} className='dir'>
+            {/* <h4>{i}</h4> */}
+            <h4 className='dir_head'>{path[i]}</h4>
+            {
+              // dir.map(item => <Item name = {item.name} type = {item.type} />)
+              dir.map((item, j) => {
+                const is_item_selected = selected_item && (i + 1) === path.length && selected_item === item.name
+                console.log(is_item_selected)
+                // if (
+                //    //|| 
+                //   // (this.state.selected_file && (i + 1) === this.state.dirs_path.length && this.state.selected_file === item.name)
+                // ) {
+                return (
+                  <Item 
+                    // key = {j}
+                    key = {item.name}
+                    selected={ item.name === path[i + 1] || is_item_selected }
+                    // onClick = { () => select_item(i, item.name, item.type) }
+                    onClick = { () => select_item(i, item) }
+                    name = {item.name} 
+                    type = {item.type}
+                  />
+                )
+                // }
+                // else
+                  // return (
+                  //   <Item
+                  //     key = {j}
+                  //     // onClick = { () => this.select(i, item.name, item.type) }
+                  //     name = {item.name}
+                  //     type = {item.type}
+                  //   />
+                  // )
+              })
+            }
+          </ul>
+        )})
       }
-      fetch(host + '/file_info', opts)
-      .then(response => { if (response.ok) return response.json()})
-      .then(json => { this.setState({ file_info: json }) })
-    }
-    else {
-      this.setState({file_info: undefined})
-    }
-  }
-
-  make_preview() {
-    let preview
-    if (this.state.dirs_path) {
-      if (this.state.selected_file) {
-        preview = <Preview 
-          type = 'file'
-          abs_path = {this.state.dirs_path.join('/') + '/' + this.state.selected_file}
-          eval_shell_script = {this.eval_shell_script}
-          setState_App = {state => this.setState_App(state)}
-          dirs = {this.state.dirs}
-          file_info = {this.state.file_info}
-        />
-      }
-      else {
-        preview = <Preview 
-          type = 'folder'
-          abs_path = {this.state.dirs_path.join('/')}
-          eval_shell_script = {this.eval_shell_script}
-          setState_App = {state => this.setState_App(state)}
-          dirs = {this.state.dirs}
-        />
-      }
-    }
-    else {
-      preview = <Preview />
-    }
-    return preview
-  }
-
-  render() {
-
-    
-
-    return (
-      <div className='app'>
-        <div className='dirs'>
-          {
-            this.state.dirs.map((dir, i) => {
-              return(
-
-                <ul className='dir'>
-                  <h4>{i}</h4>
-                  <h4>{this.state.dirs_path[i]}</h4>
-                  {
-                    dir.map(item => {
-                      if (
-                        item.name === this.state.dirs_path[i + 1] || 
-                        (this.state.selected_file && (i + 1) === this.state.dirs_path.length && this.state.selected_file === item.name)
-                      ) {
-                        return (
-                          <Item 
-                            selected
-                            onClick = { () => this.select(i, item.name, item.type) }
-                            name = {item.name} 
-                            type = {item.type}
-                          />
-                        )
-                      }
-                      else
-                        return ( 
-                          <Item
-                            onClick = { () => this.select(i, item.name, item.type) }
-                            name = {item.name}
-                            type = {item.type}
-                          />
-                        )
-                    })
-                  }
-                </ul>
-              )
-            })
-          }
-          {this.make_preview()}
-          {/* {
-            this.state.preview ?
-              <Preview
-                type='file'
-                abs_path = {this.state.preview.item}
-                description = {this.state.preview.data.description}
-              />
-            :
-              <Preview type='folder' />
-          } */}
-        </div>
-
-      </div>
-    )
-  }
+      {selected_item && <Preview />}
+      {/* <button onClick = {fetch_downloads}>Fetch ~/Downloads</button> */}
+    </div>
+  )
 }
 
 export default App
