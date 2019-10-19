@@ -5,11 +5,35 @@ const Preview = ({item}) => {
   // console.log(props)
   console.log(item)
   return (
-    <ul>
-      <li>{item.name}</li>
-      <li>{item.type}</li>
-      <li>{item.path}</li>
-    </ul>
+    <div className='preview'>
+      <button>Open with Default App</button>
+      <ul>
+        <li>{item.name}</li>
+        <li>{item.type}</li>
+        <li>{item.path}</li>
+      </ul>
+      <img className='icon' src='/finder.png'  onClick={() => this.props.eval_shell_script(`open -R '${this.props.abs_path}'`)} alt='finder icon'/>
+      <img className='icon' src='/sublime.png' onClick={() => this.props.eval_shell_script(`open -a 'Sublime Text' '${this.props.abs_path}'`)} alt='sublime text icon' />
+      <img className='icon' src='/trash.png'   onClick={() => this.delete_item()} alt='trash icon' />
+      <hr/>
+      {
+        item.type === 'file' && (
+          <div>
+            {this.is_text()}
+            {item.file_type === 'image' && <img className='image_preview' src={ '/rootlink' + this.props.abs_path} alt='preview'/>}
+          </div>
+        )
+      }
+      {
+        item.type === 'folder' && (
+          <div>
+            <span>new</span>
+            <img className='icon' src='/folder.png' onClick={() => this.new_item('folder')} alt='folder icon'/>
+            <img className='icon' src='/file.png'   onClick={() => this.new_item('file'  )} alt = 'file icon'/>
+          </div>
+        )
+      }
+    </div>
   )
 }
 
@@ -105,23 +129,7 @@ const Preview = ({item}) => {
 //           <img className='icon' src='/trash.png'   onClick={() => this.delete_item()} alt='trash icon' />
 //           <hr/>
   
-//           {
-//             this.props.type === 'file' && (
-//               <div>
-//                 {this.is_text()}
-//                 {isimage(this.props.abs_path) && <img className='image_preview' src={ '/rootlink' + this.props.abs_path} alt='preview'/>}
-//               </div>
-//             )
-//           }
-//           {
-//             this.props.type === 'folder' && (
-//               <div>
-//                 <span>new</span>
-//                 <img className='icon' src='/folder.png' onClick={() => this.new_item('folder')} alt='folder icon'/>
-//                 <img className='icon' src='/file.png'   onClick={() => this.new_item('file'  )} alt = 'file icon'/>
-//               </div>
-//             )
-//           }
+
   
 //         </div>
 //       )

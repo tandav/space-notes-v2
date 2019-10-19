@@ -3,6 +3,7 @@ import './App.css'
 import { host } from './index'
 import Item from './Item'
 import Preview from './Preview'
+import * as util from './util'
 
 const App = () => {
   const [selected_item, set_selected_item] = useState() // selected here means in the last column/folder (with preview)
@@ -12,12 +13,11 @@ const App = () => {
 
   useEffect(() => {
     const fetch_dirs = async () => {
-      const response = await fetch(host + '/path' + window.location.pathname);
-      const data = await response.json();
-      set_dirs(data.dirs);
-      set_path(data.path);
+      const data = await util.fetch_json(host + '/path' + window.location.pathname)
+      set_dirs(data.dirs)
+      set_path(data.path)
     }
-    fetch_dirs();
+    fetch_dirs()
   }, [])
 
   // const fetch_downloads = async () => {
@@ -30,20 +30,18 @@ const App = () => {
     if (item.type === 'folder') {
       // set_dirs(dirs.slice(0, column_i + 1).concat(item_name))
       // set_dirs_path(dirs_path.slice(0, column_i + 1).concat(item_name))
-
       const path_new = path.slice(0, column_i + 1).concat(item.name)
       // const path_new_str = path_new.slice(1).join('/')
       const path_new_str = path_new.join('/')
       console.log(path_new, path_new_str)
       window.history.pushState(null, null, path_new_str)
-      const response = await fetch(host + '/last_dir_in_path/' + path_new.slice(1).join('/'))
-      const data = await response.json()
+      const data = await util.fetch_json(host + '/last_dir_in_path/' + path_new.slice(1).join('/'))
       set_dirs(dirs.slice(0, column_i + 1).concat([data]))
       set_path(path.slice(0, column_i + 1).concat(item.name))
       set_selected_item(undefined)
     }
 
-    if (item.type == 'file') {
+    if (item.type === 'file') {
       // TODO: add filename to url (link to file)
       const path_new = path.slice(0, column_i + 1)
       const path_new_str = path_new.join('/')
