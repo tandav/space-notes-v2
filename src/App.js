@@ -26,23 +26,6 @@ const App = () => {
   //   set_dirs(data)
   // }
 
-  // const select_item = async (column_i, item_name, item_type) => {
-  //   if (item_type === 'folder') {
-  //     // set_dirs(dirs.slice(0, column_i + 1).concat(item_name))
-  //     // set_dirs_path(dirs_path.slice(0, column_i + 1).concat(item_name))
-
-  //     const path_new = path.slice(0, column_i + 1).concat(item_name)
-  //     // const path_new_str = path_new.slice(1).join('/')
-  //     const path_new_str = path_new.join('/')
-  //     console.log(path_new, path_new_str)
-  //     // window.history.pushState(null, null, path_new_str)
-  //     const response = await fetch(host + '/last_dir_in_path/' + path_new.slice(1).join('/'))
-  //     const data = await response.json()
-  //     set_dirs(dirs.slice(0, column_i + 1).concat([data]))
-  //     set_path(path.slice(0, column_i + 1).concat(item_name))
-  //   }
-  //   set_selected_item(item_name)
-  // }
   const select_item = async (column_i, item) => {
     if (item.type === 'folder') {
       // set_dirs(dirs.slice(0, column_i + 1).concat(item_name))
@@ -57,6 +40,7 @@ const App = () => {
       const data = await response.json()
       set_dirs(dirs.slice(0, column_i + 1).concat([data]))
       set_path(path.slice(0, column_i + 1).concat(item.name))
+      set_selected_item(undefined)
     }
 
     if (item.type == 'file') {
@@ -66,9 +50,9 @@ const App = () => {
       window.history.pushState(null, null, path_new_str)
       set_dirs(dirs.slice(0, column_i + 1))
       set_path(path.slice(0, column_i + 1))
+      set_selected_item(item)
     }
 
-    set_selected_item(item.name)
   }
 
   return (
@@ -113,7 +97,7 @@ const App = () => {
           </ul>
         )})
       }
-      {selected_item && <Preview />}
+      {selected_item && <Preview item = {selected_item} />}
       {/* <button onClick = {fetch_downloads}>Fetch ~/Downloads</button> */}
     </div>
   )
