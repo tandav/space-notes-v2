@@ -1,15 +1,13 @@
 import pathlib
-
+import config
 
 def dir_items(path):
     files, folders = [], []
     for item in sorted(path.iterdir()):
-        if item.name == '.DS_Store':
-            continue
-        if item.is_file():
-            files.append({'name': item.name, 'type': 'file'})
-        if item.is_dir():
-            folders.append({'name': item.name, 'type': 'folder'})
+        if item.name == '.DS_Store':  continue
+        _ = { 'name': item.name, 'path': str(item.relative_to(config.root))}
+        if item.is_file(): files  .append({**_, 'type': 'file'  })
+        if item.is_dir() : folders.append({**_, 'type': 'folder'})
     return folders + files
 
 
